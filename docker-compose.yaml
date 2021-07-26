@@ -1,0 +1,63 @@
+version: '3'
+services:
+  influxdb:
+    image: "influxdb:2"
+    restart: "always"
+    volumes: 
+      - "${INFLUX_DATA_DIRECTORY}:/var/lib/influx2"
+      - "./etc/influxdb2:/etc/influxdb2"
+    ports:
+      - "${INFLUX_LISTEN_ADDR}:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUX_USERNAME}"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUX_PASSWORD}"
+      DOCKER_INFLUXDB_INIT_ORG: "${INFLUX_ORG}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUX_BUCKET}"
+
+  telegraf:
+    image: "telegraf:1.19"
+    restart: "always"
+    command: "--config /etc/telegraf/telegraf.conf --config-directory /etc/telegraf/telegraf.d"
+    volumes:
+      - "./etc/telegraf:/etc/telegraf:ro"
+      - "/proc:/host/proc:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      HOST_PROC: "/host/proc"
+
+  mosquitto:
+    image: "eclipse-mosquitto:2"
+    restart: "always"
+    ports:
+      - "${MOSQUITTO_LISTEN_ADDR}:1883"
+    volumes:
+      - "./etc/mosquitto:/etc/mosquitto:ro"
+      - "${MOSQUITTO_DATA_DIRECTORY}:/mosquitto/data"
+      - "${MOSQUITTO_LOG_DIRECTORY}:/mosquitto/log"
+
+  grafana:
+    image: "grafana/grafana:8"
+    user: "1000"
+    restart: "always"
+    environment:
+      GF_RENDERING_SERVER_URL: "http://grafana_renderer:8081/render"
+      GF_RENDERING_CALLBACK_URL: "http://grafana:3000"
+    ports:
+      - "${GRAFANA_LISTEN_ADDR}:3000"
+    volumes:
+      - "${GRAFANA_DATA_DIRECTORY}:/var/lib/grafana"
+      - "./etc/grafana:/etc/grafana"
+
+  grafana_renderer:
+    image: "grafana/grafana-image-renderer:latest"
+    depends_on:
+      - "grafana"
+    restart: "always"
+    environment:
+      BROWSER_TZ: "${GRAFANA_TIMEZONE}"
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: "${NETWORK_CIDR}"
