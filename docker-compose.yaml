@@ -15,7 +15,7 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUX_BUCKET}"
 
   telegraf:
-    image: "telegraf:1.19"
+    image: "telegraf:latest"
     restart: "always"
     command: "--config /etc/telegraf/telegraf.conf --config-directory /etc/telegraf/telegraf.d"
     volumes:
@@ -26,7 +26,7 @@ services:
       HOST_PROC: "/host/proc"
 
   mosquitto:
-    image: "eclipse-mosquitto:2"
+    image: "eclipse-mosquitto:latest"
     restart: "always"
     ports:
       - "${MOSQUITTO_LISTEN_ADDR}:1883"
@@ -36,7 +36,7 @@ services:
       - "${MOSQUITTO_LOG_DIRECTORY}:/mosquitto/log"
 
   grafana:
-    image: "grafana/grafana:8"
+    image: "grafana/grafana:latest"
     user: "1000"
     restart: "always"
     environment:
