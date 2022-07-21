@@ -1,4 +1,4 @@
-# System Agent Infrastructure
+# mtig2
 
 * InfluxDB
 * Telegraf
