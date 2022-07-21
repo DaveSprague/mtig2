@@ -54,7 +54,7 @@ services:
       - "grafana"
     restart: "always"
     environment:
-      BROWSER_TZ: "${GRAFANA_TIMEZONE}"
+      # BROWSER_TZ: "${GRAFANA_TIMEZONE}"
 
 networks:
   default:
