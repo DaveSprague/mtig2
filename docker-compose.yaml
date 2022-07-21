@@ -1,7 +1,7 @@
 version: '3'
 services:
   influxdb:
-    image: "influxdb:2"
+    image: "influxdb:latest"
     restart: "always"
     volumes: 
       - "${INFLUX_DATA_DIRECTORY}:/var/lib/influx2"
